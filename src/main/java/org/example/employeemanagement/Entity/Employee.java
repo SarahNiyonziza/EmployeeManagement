@@ -1,16 +1,12 @@
 package org.example.employeemanagement.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "employees")
+@Document(collection = "employees")  // MongoDB annotation
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,8 +15,7 @@ import java.time.LocalDate;
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @NotBlank
     private String name;

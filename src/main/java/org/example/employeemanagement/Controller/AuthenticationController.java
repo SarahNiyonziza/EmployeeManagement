@@ -25,11 +25,10 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        JwtResponse response = authenticationService.login(loginRequest);
+        TokenResponse response = authenticationService.login(loginRequest);
         return ResponseEntity.ok(response);
     }
 
-    // ADD THESE NEW ENDPOINTS FOR ROLE TESTING:
 
     @GetMapping("/admin-test")
     @PreAuthorize("hasRole('ADMIN')")
@@ -45,6 +44,6 @@ public class AuthenticationController {
 
     @GetMapping("/public-test")
     public ResponseEntity<?> publicTest() {
-        return ResponseEntity.ok(new MessageResponse("Public endpoint accessed successfully!"));
+        return ResponseEntity.ok(new MessageResponse("Public  accessed successfully!"));
     }
 }

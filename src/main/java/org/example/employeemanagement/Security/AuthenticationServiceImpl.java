@@ -56,7 +56,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public JwtResponse login(LoginRequest loginRequest) {
+    public TokenResponse login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -75,13 +75,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 )
         );
 
-        return new JwtResponse(
-                jwt,
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getFullName(),
-                user.getRole().name()
-        );
+        // Return only the token (not user details)
+        return new TokenResponse(jwt);
     }
 }
