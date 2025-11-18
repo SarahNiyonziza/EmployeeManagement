@@ -1,33 +1,38 @@
 package org.example.employeemanagement.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
-})
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @NotBlank
+    private String fullName;
+
+    @NotBlank
+    @Column(unique = true)
     private String username;
 
-    @Column(nullable = false, length = 100)
+    @Email
+    @NotBlank
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @NotBlank
     private String password;
 
-    // store role as string: ROLE_USER or ROLE_ADMIN
-    @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role; // Stores ROLE_USER or ROLE_ADMIN
 }
