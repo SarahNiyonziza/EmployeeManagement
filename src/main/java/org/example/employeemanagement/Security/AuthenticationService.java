@@ -1,11 +1,8 @@
 package org.example.employeemanagement.Security;
 
-import org.example.employeemanagement.Dto.JwtResponse;
-import org.example.employeemanagement.Dto.LoginRequest;
-import org.example.employeemanagement.Dto.MessageResponse;
-import org.example.employeemanagement.Dto.RegisterRequest;
+import org.example.employeemanagement.Dto.*;
 
 public interface AuthenticationService {
     MessageResponse register(RegisterRequest registerRequest);
-    JwtResponse login(LoginRequest loginRequest);
+    TokenResponse login(LoginRequest loginRequest); // Changed return type
 }
