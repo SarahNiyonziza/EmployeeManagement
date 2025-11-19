@@ -75,7 +75,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 )
         );
 
-        // Return only the token (not user details)
+
         return new TokenResponse(jwt);
     }
 }
