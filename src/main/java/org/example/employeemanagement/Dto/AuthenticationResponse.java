@@ -1,10 +1,14 @@
 package org.example.employeemanagement.Dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AuthenticationResponse {
     private String token;
+    private String message;
+    private String role;
 }
