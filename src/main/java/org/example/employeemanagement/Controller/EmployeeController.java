@@ -1,63 +1,90 @@
+// EmployeeController.java
 package org.example.employeemanagement.Controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.employeemanagement.Dto.EmployeeRequest;
 import org.example.employeemanagement.Dto.EmployeeResponse;
-import org.example.employeemanagement.Security.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.employeemanagement.Service.EmployeeService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/employees")
-@CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Employees", description = "Employee management endpoints")
+@RequiredArgsConstructor
+@Tag(name = "Employee Management", description = "APIs for managing employees")
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
-    @Operation(summary = "Create a new employee", description = "Create a new employee (Admin only)")
-    @PostMapping
+    @Operation(summary = "Create new employee", description = "Create a new employee record (Admin only)")
+    @ApiResponse(responseCode = "201", description = "Employee created successfully")
+    @ApiResponse(responseCode = "403", description = "Access denied - Admin role required")
     @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping
     public ResponseEntity<EmployeeResponse> createEmployee(@Valid @RequestBody EmployeeRequest request) {
         EmployeeResponse response = employeeService.createEmployee(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @Operation(summary = "Get all employees", description = "Retrieve list of all employees")
-    @GetMapping
+    @Operation(summary = "Get all employees", description = "Retrieve all employee records")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved employees")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping
     public ResponseEntity<List<EmployeeResponse>> getAllEmployees() {
         List<EmployeeResponse> employees = employeeService.getAllEmployees();
         return ResponseEntity.ok(employees);
     }
 
-    @Operation(summary = "Get employee by ID", description = "Retrieve a specific employee by their ID")
-    @GetMapping("/{id}")
+
+    @Operation(summary = "Get employee by ID", description = "Retrieve a specific employee by ID")
+    @ApiResponse(responseCode = "200", description = "Employee found")
+    @ApiResponse(responseCode = "404", description = "Employee not found")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/{id}")
     public ResponseEntity<EmployeeResponse> getEmployeeById(@PathVariable String id) {
         EmployeeResponse employee = employeeService.getEmployeeById(id);
-        return ResponseEntity.ok(employee);
+        if (employee != null) {
+            return ResponseEntity.ok(employee);
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    @Operation(summary = "Update employee", description = "Update an existing employee's details")
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<EmployeeResponse> updateEmployee(@PathVariable String id, @Valid @RequestBody EmployeeRequest request) {
-        EmployeeResponse response = employeeService.updateEmployee(id, request);
-        return ResponseEntity.ok(response);
-    }
 
-    @Operation(summary = "Delete employee", description = "Delete an employee (Admin only)")
-    @DeleteMapping("/{id}")
+    @Operation(summary = "Update employee", description = "Update employee details (Admin only)")
+    @ApiResponse(responseCode = "200", description = "Employee updated successfully")
+    @ApiResponse(responseCode = "404", description = "Employee not found")
+    @ApiResponse(responseCode = "403", description = "Access denied - Admin role required")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteEmployee(@PathVariable String id) {
-        employeeService.deleteEmployee(id);
-        return ResponseEntity.ok().build();
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeResponse> updateEmployee(
+            @PathVariable String id,
+            @Valid @RequestBody EmployeeRequest request) {
+        EmployeeResponse updatedEmployee = employeeService.updateEmployee(id, request);
+        if (updatedEmployee != null) {
+            return ResponseEntity.ok(updatedEmployee);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @Operation(summary = "Delete employee", description = "Delete an employee by ID (Admin only)")
+    @ApiResponse(responseCode = "204", description = "Employee deleted successfully")
+    @ApiResponse(responseCode = "404", description = "Employee not found")
+    @ApiResponse(responseCode = "403", description = "Access denied - Admin role required")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable String id) {
+        boolean deleted = employeeService.deleteEmployee(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

@@ -1,12 +1,32 @@
 package org.example.employeemanagement.Dto;
 
-import lombok.Data;
 
-@Data
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RegisterRequest {
-    private String fullName;
+    @NotBlank
     private String username;
+
+
+    @Email
+    @NotBlank
     private String email;
+
+
+    @NotBlank
+    @Size(min = 6)
     private String password;
+
+
+
     private String role;
 }
